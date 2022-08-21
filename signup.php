@@ -1,17 +1,30 @@
 <?php
 // ----
 $userCreated = false;
+$existEmail = false;
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     include './connection/conn.php';
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST["password"];
-    $sql = "INSERT INTO `users` (`username`, `email`, `password`, `date`) VALUES ('$username', '$email', '$password', current_timestamp())";
 
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $userCreated = true;
+    // Check email is already exists
+
+    $existSql = "SELECT * FROM `users` WHERE email = '$email'";
+    $result = mysqli_query($conn, $existSql);
+    $numRows = mysqli_num_rows($result); //this will return number of row that match this query
+    if ($numRows > 0) {
+        $existEmail = true;
+        exit;
+    } else {
+        $existEmail = false;
+        $sql = "INSERT INTO `users` (`username`, `email`, `password`, `date`) VALUES ('$username', '$email', '$password', current_timestamp())";
+        $result = mysqli_query($conn, $sql);
+        if ($result) {
+            $userCreated = true;
+        }
     }
+
 }
 ?>
 
@@ -37,6 +50,11 @@ if ($userCreated) {
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
 }
 
+if ($existEmail) {
+    echo '<div class="alert alert-error alert-dismissible fade show col-md-5 my-2 text-center" role="alert">
+    <strong>Error Found</strong> this email is already exist
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+}
 ?>
 
 

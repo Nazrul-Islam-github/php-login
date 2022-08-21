@@ -1,3 +1,32 @@
+<?php
+// ----
+$login = false;
+$showError = false;
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    include './connection/conn.php';
+    $email = $_POST['email'];
+    $password = $_POST["password"];
+
+    $sql = "Select * from users where email='$email' AND password='$password'";
+
+    $result = mysqli_query($conn, $sql);
+    $num = mysqli_num_rows($result);
+    echo $num;
+    if ($num > 0) {
+        $login = true;
+        session_start();
+        $_SESSION['loggin'] = true;
+        $_SESSION['email'] = $email;
+        header("location: welcome.php");
+    } else {
+        $login = false;
+        $showError = "Invalid Credentials";
+    }
+
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,10 +45,24 @@
 <?php
 require 'partials/_nav.php';
 ?>
+
+<?php
+if ($login) {
+    echo '<div class="alert alert-success alert-dismissible fade show col-md-5 my-2 text-center" role="alert">
+    <strong>Success</strong> Login
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+}
+
+if ($showError) {
+    echo '<div class="alert alert-danger alert-dismissible fade show col-md-5 my-2 text-center" role="alert">
+    <strong>Success</strong>' . $showError . '
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+}
+?>
     <!-- Navbar End -->
     <div class="container">
       <h2>Login Here</h2>
-      <form>
+    <form method="post" action="/login_system/login.php">
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label"
             >Email address</label
@@ -29,6 +72,7 @@ require 'partials/_nav.php';
             class="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
+            name="email"
           />
           <div id="emailHelp" class="form-text">
             We'll never share your email with anyone else.
@@ -40,9 +84,10 @@ require 'partials/_nav.php';
             type="password"
             class="form-control"
             id="exampleInputPassword1"
+            name="password"
           />
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Login</button>
       </form>
     </div>
     <script
