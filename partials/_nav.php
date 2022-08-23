@@ -1,9 +1,11 @@
     <!-- Navbar -->
 <?php
+$login = false;
 session_start();
-
-if (isset($_SESSION['login']) || $_SESSION['loggin'] == true) {
+if (isset($_SESSION['login']) && $_SESSION['loggin'] == true) {
     $login = true;
+} else {
+    $login = false;
 }
 echo '<nav class="navbar navbar-expand-lg bg-dark navbar-dark">
       <div class="container-fluid">

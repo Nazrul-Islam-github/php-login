@@ -15,10 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $numRows = mysqli_num_rows($result); //this will return number of row that match this query
     if ($numRows > 0) {
         $existEmail = true;
-        exit;
+
     } else {
         $existEmail = false;
-        $sql = "INSERT INTO `users` (`username`, `email`, `password`, `date`) VALUES ('$username', '$email', '$password', current_timestamp())";
+        $hashPassword = password_hash($password, PASSWORD_DEFAULT);
+        echo $hashPassword;
+        $sql = "INSERT INTO `users` (`username`, `email`, `password`, `date`) VALUES ('$username', '$email', '$hashPassword', current_timestamp())";
         $result = mysqli_query($conn, $sql);
         if ($result) {
             $userCreated = true;

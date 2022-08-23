@@ -7,17 +7,27 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $email = $_POST['email'];
     $password = $_POST["password"];
 
-    $sql = "Select * from users where email='$email' AND password='$password'";
+    // $sql = "Select * from users where email='$email' AND password='$password'";
+    $sql = "Select * from users where email='$email'";
 
     $result = mysqli_query($conn, $sql);
     $num = mysqli_num_rows($result);
     echo $num;
     if ($num > 0) {
-        $login = true;
-        session_start();
-        $_SESSION['loggin'] = true;
-        $_SESSION['email'] = $email;
-        header("location: welcome.php");
+        while ($row = mysqli_fetch_assoc($result)) {
+            if (password_verify($password, $row['password'])) {
+                $login = true;
+                session_start();
+                $_SESSION['loggin'] = true;
+                $_SESSION['email'] = $email;
+                header("location: welcome.php");
+
+            } else {
+                $login = false;
+                $showError = "Invalid Credentials";
+            }
+        }
+
     } else {
         $login = false;
         $showError = "Invalid Credentials";
